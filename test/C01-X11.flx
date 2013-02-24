@@ -1,0 +1,7 @@
+include "PKGTOOL/pkgtool";
+open PkgTool;
+requires package "x11";
+const QueuedAfterFlush:int requires header '#include <X11/Xlib.h>';
+assert_true(QueuedAfterFlush == 2, "Checking X11 functionality", 
+            "Unable to use X11.");
+

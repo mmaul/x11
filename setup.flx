@@ -1,0 +1,58 @@
+include "PKGTOOL/pkgtool";
+ 
+open PkgTool;
+open Filename;
+instance PkgTool {
+
+  proc build () {
+    task("Determining X11 configuration");
+    var lib = "libX11.so";
+    var lib_path = "";
+    for path in list ("/lib","/usr/lib","/usr/local/lib",EXTRA_LIBDIR) do
+      match filetype(path.join(lib)) with
+      |REGULAR => { lib_path = "-L" + path; goto found_x11; }
+      |SYMLINK => { lib_path = "-L" + path; goto found_x11; }
+      |_ => { }
+      endmatch;
+    done
+    setup_fail("Unable to find libX11.so. Please locate and pass path to setup with the -L switch");
+found_x11:>
+    var inc = "X11".join("Xlib.h");
+    var includes = "";
+    for path in list ("/usr/include","/usr/local/include",EXTRA_INCDIR) do
+      match filetype(path.join(inc)) with
+      |REGULAR => { includes = path; goto found_x11_h; }
+      |SYMLINK => { includes = path; goto found_x11_h; }
+      |_ => {}
+      endmatch;
+    done
+    setup_fail("Unable to find Xlib.h. Please locate and pass path to setup with the -L switch");
+found_x11_h:>
+    task("Creating config/x11.fpc");
+    var x11_fpc:ofile = fopen_output((BUILD_DIR.join("config")).join("x11.fpc"));
+    if valid(x11_fpc) do
+      var x11_s:string = q"""
+cflags:-I$(includes)
+provides_dlib: $(lib_path) -lX11
+provides_slib: $(lib_path) -lX11
+includes: "<X11/Xlib.h>"
+includes: "<X11/Xutil.h>"
+includes: "<X11/cursorfont.h>"
+includes: "<X11/Xatom.h>"
+includes: "<X11/Xproto.h>"
+includes: "<X11/Xutil.h>"
+includes "<locale.h>
+
+""";
+      write (x11_fpc,x11_s);
+      fclose(x11_fpc);
+    else
+      red("Failed creating x11.fpc");endl;System::exit(-1);
+    done
+    run_test("C01-X11.flx",true);
+  }
+
+}
+
+
+SetupTool::run();
