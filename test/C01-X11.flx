@@ -1,4 +1,4 @@
-include "PKGTOOL/pkgtool";
+include "std/felix/pkgtool";
 open PkgTool;
 requires package "x11";
 const QueuedAfterFlush:int requires header '#include <X11/Xlib.h>';

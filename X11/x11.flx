@@ -411,9 +411,9 @@ class X11_Xlib_Event {
 
   type xerrorhandler = "XErrorHandler";
   proc  setErrorHandler: xerrorhandler = "XSetErrorHandler($1)";
-  //grabKey of     &display * uchar * uint * window * bool * int * int
-  proc grabKey: display_ptr*uchar*uint*window*bool*int*int = "XGrabKey($1,$2,$3,$4,$5,$6,$7);";
-  gen grabKey': display_ptr*uchar*uint*window*bool*int*int->int = "XGrabKey($1,$2,$3,$4,$5,$6,$7)";
+  //grabKey of     &display * utiny * uint * window * bool * int * int
+  proc grabKey: display_ptr*utiny*uint*window*bool*int*int = "XGrabKey($1,$2,$3,$4,$5,$6,$7);";
+  gen grabKey': display_ptr*utiny*uint*window*bool*int*int->int = "XGrabKey($1,$2,$3,$4,$5,$6,$7)";
     //Display*          /* display */,
     //int               /* keycode */,
     //unsigned int      /* modifiers */,
@@ -422,7 +422,7 @@ class X11_Xlib_Event {
     //int               /* pointer_mode */,
     //int               /* keyboard_mode */
 
-  typedef keycode = uchar;
+  typedef keycode = utiny;
 
   typedef xid = ulong;
   type keysym = "KeySym";
@@ -861,9 +861,9 @@ cstruct  XErrorEvent = {
 	display:display_ptr;	/* Display the event was read from */
 	resourceid:XID ;		/* resource id */
 	serial:ulong;	/* serial number of failed request */
-	error_code:uchar;	/* error code of failed request */
-	request_code:uchar;	/* Major op-code of failed request */
-	minor_code:uchar;	/* Minor op-code of failed request */
+	error_code:utiny;	/* error code of failed request */
+	request_code:utiny;	/* Major op-code of failed request */
+	minor_code:utiny;	/* Minor op-code of failed request */
 };
 
 cstruct  XAnyEvent = {
